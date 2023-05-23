@@ -1,6 +1,7 @@
 package com.kurs.library.controller;
 
 import com.kurs.library.entity.Book;
+import com.kurs.library.exception.BookException;
 import com.kurs.library.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,10 @@ public class BookController {
     public ResponseEntity<List<Book>> getAllBooks(
             @RequestParam(value = AUTHOR, required = false) String author,
             @RequestParam(value = TITLE, required = false) String title,
-            @RequestParam(value = AVAILABLE, required = false) Boolean available) {
+            @RequestParam(value = AVAILABLE, required = false) Boolean available) throws BookException {
         List<Book> allBooks = bookService.getAllBooksOrUseFilter(author, title, available);
         if (allBooks.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new BookException("BookException", HttpStatus.NOT_FOUND, 404, "Not found!");
         }
         return ResponseEntity.ok(allBooks);
     }
