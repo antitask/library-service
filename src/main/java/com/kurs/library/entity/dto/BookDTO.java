@@ -1,0 +1,15 @@
+package com.kurs.library.entity.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.time.LocalDate;
+@Data
+@AllArgsConstructor
+public class BookDTO {
+    private String title;
+    private String author;
+    private String ISBN;
+    private boolean available;
+    private LocalDate dateBorrowed;
+}
