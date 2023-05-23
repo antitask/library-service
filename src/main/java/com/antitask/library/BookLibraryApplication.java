@@ -18,7 +18,6 @@ public class BookLibraryApplication implements ApplicationRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(BookLibraryApplication.class, args);
-
     }
 
     @Override

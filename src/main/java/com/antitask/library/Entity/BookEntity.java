@@ -1,6 +1,8 @@
 package com.antitask.library.Entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -8,6 +10,8 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Table (name = "books")
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookEntity {
 
     @Id
