@@ -24,4 +24,5 @@ public class BookLibraryApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         librarySeedService.seed();
     }
+
 }
