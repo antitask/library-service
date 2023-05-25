@@ -43,9 +43,9 @@ public class LibrarySeedService {
 
         BookEntity book10 = new BookEntity(null, "The Chronicles of Narnia", "C.S. Lewis", "9780064471190", false, null, null);
 
-        BookEntity book11 = new BookEntity(null, "Harry Potter and the Philosopher's Stone", "J.K. Rowling", "9780747532743", true, LocalDate.of(2021, 9, 15), "Grace123");
+        BookEntity book11 = new BookEntity(null, "Harry Potter and the Philosopher's Stone", "J.K. Rowling", "9780747532743", true, LocalDate.of(2021, 9, 15), null);
 
-        BookEntity book12 = new BookEntity(null, "The Hobbit", "J.R.R. Tolkien", "9780547928227", true, LocalDate.of(2021, 10, 1), "Henry456");
+        BookEntity book12 = new BookEntity(null, "The Hobbit", "J.R.R. Tolkien", "9780547928227", true, LocalDate.of(2021, 10, 1), null);
 
 
 
