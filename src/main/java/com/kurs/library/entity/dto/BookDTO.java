@@ -1,5 +1,6 @@
 package com.kurs.library.entity.dto;
 
+import com.kurs.library.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
