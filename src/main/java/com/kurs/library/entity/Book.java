@@ -31,5 +31,6 @@ public class Book {
     @NotNull(message = "available can't be null")
     private boolean available;
     private LocalDate dateBorrow;
+    private String borrower;
 
 }

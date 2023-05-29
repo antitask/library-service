@@ -1,12 +1,15 @@
 package com.kurs.library.controller;
 
 import com.kurs.library.entity.Book;
+import com.kurs.library.entity.Role;
+import com.kurs.library.entity.User;
+import com.kurs.library.entity.dto.BookDTO;
 import com.kurs.library.exception.BookException;
+import com.kurs.library.services.AuthService;
 import com.kurs.library.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +28,9 @@ public class BookController {
     private static final String AUTHORISATION = "Authorization";
 
     private final BookService bookService;
+    private final AuthService authService;
 
-    @GetMapping(path = "/books")
+    @GetMapping(path = "public/books")
     public ResponseEntity<List<Book>> getAllBooks(
             @RequestParam(value = AUTHOR, required = false) String author,
             @RequestParam(value = TITLE, required = false) String title,
@@ -38,11 +42,11 @@ public class BookController {
         return ResponseEntity.ok(allBooks);
     }
 
-    @GetMapping(path = "/isbn/{isbn}")
+    @GetMapping(path = "public/isbn/{isbn}")
     public ResponseEntity<Book> getBookByISBN(@PathVariable(value = ISBN) String isbn) throws BookException {
         Book bookByISBN = bookService.getBookByISBN(isbn);
         if (bookByISBN == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new BookException("BookException", HttpStatus.NOT_FOUND, 404, "Not found!");
         }
         return ResponseEntity.ok(bookByISBN);
     }
@@ -50,27 +54,45 @@ public class BookController {
     @GetMapping(path = "/user/borrow/book/{id}")
     public ResponseEntity<String> borrowBook(
             @RequestHeader(value = AUTHORISATION) String authorisation,
-            @PathVariable(value = ID) String id) throws BookException {
+            @PathVariable(value = ID) Long id) throws BookException {
         if (authorisation == null || !authorisation.startsWith("Bearer ")) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (!bookService.isValidUser(authorisation)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        User user = authService.authorisedUser(authorisation);
+
+        if (user != null && user.getRole().equals(Role.USER)) {
+            return ResponseEntity.ok().body(bookService.borrowBook(id, user));
         }
-
-        return ResponseEntity.ok().body(bookService.borrowBook(id));
-
+        throw new BookException("BookException", HttpStatus.UNAUTHORIZED, 401, "Unauthorized");
     }
 
     @PostMapping(path = "/admin/book")
-    public ResponseEntity<String> postBook(@Validated @RequestBody Book book) throws BookException {
-        return ResponseEntity.ok(bookService.saveBook(book));
+    public ResponseEntity<String> postBook(
+            @RequestHeader(value = AUTHORISATION) String authorisation,
+            @Validated @RequestBody BookDTO book) throws BookException {
+        if (authorisation == null || !authorisation.startsWith("Bearer ")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = authService.authorisedUser(authorisation);
+        if (user != null && user.getRole().equals(Role.ADMIN)) {
+            return ResponseEntity.ok(bookService.saveBook(book));
+        }
+        throw new BookException("BookException", HttpStatus.UNAUTHORIZED, 401, "Unauthorized");
     }
 
     @DeleteMapping(path = "/admin/book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable(value = ID) Long id) throws BookException {
-        return ResponseEntity.ok().body(bookService.deleteBook(id));
-    }
+    public ResponseEntity<String> deleteBook(
+            @RequestHeader(value = AUTHORISATION) String authorisation,
+            @PathVariable(value = ID) Long id) throws BookException {
+        if (authorisation == null || !authorisation.startsWith("Bearer ")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = authService.authorisedUser(authorisation);
+        if (user != null && user.getRole().equals(Role.ADMIN)) {
+            return ResponseEntity.ok().body(bookService.deleteBook(id));
+        }
+        throw new BookException("BookException", HttpStatus.UNAUTHORIZED, 401, "Unauthorized");
 
+    }
 
 }

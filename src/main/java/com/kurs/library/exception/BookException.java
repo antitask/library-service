@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
-public class BookException extends Exception{
+public class BookException extends Exception {
     private String name;
     private HttpStatus status;
     private Integer statusCode;
